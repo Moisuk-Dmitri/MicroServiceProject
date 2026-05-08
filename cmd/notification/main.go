@@ -1,15 +1,15 @@
 package main
 
 import (
+	"context"
 	"log"
-	"time"
+	"micro-blog/internal/notification"
 )
 
 func main() {
-	log.Printf("notification service started")
+	ctx := context.Background()
 
-	for {
-		log.Printf("notification running...")
-		time.Sleep(5 * time.Second)
+	if err := notification.Run(ctx); err != nil {
+		log.Fatal(err)
 	}
 }
