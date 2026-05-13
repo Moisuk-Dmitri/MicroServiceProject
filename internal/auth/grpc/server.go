@@ -17,9 +17,13 @@ type Server struct {
 	service authservice.Service
 }
 
-func NewServer(addr string, service authservice.Service) *Server {
+func NewServer(port string, service authservice.Service) *Server {
+	if port[0] != ':' {
+		port = ":" + port
+	}
+
 	return &Server{
-		addr:    addr,
+		addr:    port,
 		service: service,
 	}
 }

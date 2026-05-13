@@ -1,12 +1,13 @@
 package blog
 
 import (
+	"context"
 	bloggrpcclient "micro-blog/internal/blog/grpcclient"
 	bloghttp "micro-blog/internal/blog/http"
 	blogservice "micro-blog/internal/blog/service"
 )
 
-func Run() error {
+func Run(ctx context.Context) error {
 	authClient, err := bloggrpcclient.NewAuthClient("localhost:8081")
 	if err != nil {
 		return err

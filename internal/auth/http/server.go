@@ -1,6 +1,7 @@
 package authhttp
 
 import (
+	"context"
 	"log"
 	authservice "micro-blog/internal/auth/service"
 	"net/http"
@@ -13,16 +14,20 @@ type Server struct {
 	server *http.Server
 }
 
-func NewServer(addr string, service authservice.Service) *Server {
+func NewServer(port string, service authservice.Service) *Server {
 	handler := NewHandler(service)
 
 	router := chi.NewRouter()
 	router.Post("/register", handler.Register)
 
+	if port[0] != ':' {
+		port = ":" + port
+	}
+
 	return &Server{
-		addr: addr,
+		addr: port,
 		server: &http.Server{
-			Addr:    addr,
+			Addr:    port,
 			Handler: router,
 		},
 	}
@@ -31,4 +36,8 @@ func NewServer(addr string, service authservice.Service) *Server {
 func (s *Server) Run() error {
 	log.Printf("auth http server started on %s", s.addr)
 	return s.server.ListenAndServe()
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.server.Shutdown(ctx)
 }

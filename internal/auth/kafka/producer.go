@@ -2,7 +2,9 @@ package authkafka
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"micro-blog/internal/events"
 
 	"github.com/segmentio/kafka-go"
 )
@@ -21,14 +23,16 @@ func NewProducer(addr string, topic string) *Producer {
 	}
 }
 
-func (p *Producer) UserCreatedEvent(ctx context.Context) error {
-	event := `{"user_id":"1"}`
-
-	err := p.writer.WriteMessages(ctx, kafka.Message{
-		Key:   []byte("user-1"),
-		Value: []byte(event),
-	})
+func (p *Producer) UserCreatedEvent(ctx context.Context, event events.UserCreatedEvent) error {
+	eventJson, err := json.Marshal(event)
 	if err != nil {
+		return fmt.Errorf("user created event: %w", err)
+	}
+
+	if err := p.writer.WriteMessages(ctx, kafka.Message{
+		Key:   []byte(event.ID),
+		Value: eventJson,
+	}); err != nil {
 		return fmt.Errorf("send user created event: %w", err)
 	}
 

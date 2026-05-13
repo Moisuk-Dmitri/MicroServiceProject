@@ -10,5 +10,11 @@ notification:
 kafka-up:
 	docker compose up -d kafka
 
-kafka-down:
+postgres-up:
+	docker compose up -d postgres
+
+docker-up:
+	docker compose up -d
+
+docker-down:
 	docker compose down
