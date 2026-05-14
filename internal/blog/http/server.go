@@ -1,6 +1,7 @@
 package bloghttp
 
 import (
+	"context"
 	"log"
 	"net/http"
 
@@ -37,4 +38,8 @@ func NewServer(
 func (s *Server) Run() error {
 	log.Printf("blog http server started on %s", s.addr)
 	return s.server.ListenAndServe()
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.server.Shutdown(ctx)
 }

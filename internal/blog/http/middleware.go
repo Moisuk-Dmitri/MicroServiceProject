@@ -22,7 +22,7 @@ func AuthMiddleware(authenticator Authenticator) func(http.Handler) http.Handler
 					http.StatusUnauthorized)
 				return
 			}
-			token := strings.Trim(authHeader, "Bearer ")
+			token := strings.TrimPrefix(authHeader, "Bearer ")
 
 			resp, err := authenticator.ValidateToken(r.Context(), token)
 			if err != nil {

@@ -3,12 +3,13 @@ package config
 import "os"
 
 type Config struct {
-	AuthHTTPPort     string
-	BlogHTTPPort     string
-	GRPCPort         string
-	PostgresDSN      string
-	KafkaAddr        string
-	UserCreatedTopic string
+	AuthHTTPPort          string
+	BlogHTTPPort          string
+	GRPCPort              string
+	PostgresDSN           string
+	KafkaAddr             string
+	KafkaUserCreatedTopic string
+	KafkaGroupID          string
 }
 
 func Load() Config {
@@ -20,8 +21,9 @@ func Load() Config {
 			"POSTGRES_DSN",
 			"postgres://postgres:postgres@localhost:5432/auth_db?sslmode=disable",
 		),
-		KafkaAddr:        getEnv("KAFKA_ADDR", "localhost:9092"),
-		UserCreatedTopic: getEnv("USER_CREATED_TOPIC", "user.created"),
+		KafkaAddr:             getEnv("KAFKA_ADDR", "localhost:9092"),
+		KafkaUserCreatedTopic: getEnv("KAFKA_USER_CREATED_TOPIC", "user.created"),
+		KafkaGroupID:          getEnv("KAFKA_GROUP_ID", "notification-service"),
 	}
 }
 

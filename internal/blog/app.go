@@ -3,11 +3,13 @@ package blog
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	bloggrpcclient "micro-blog/internal/blog/grpcclient"
 	bloghttp "micro-blog/internal/blog/http"
 	blogrepository "micro-blog/internal/blog/repository"
 	blogservice "micro-blog/internal/blog/service"
 	"micro-blog/internal/platform/config"
+	"time"
 )
 
 func Run(ctx context.Context) error {
@@ -42,5 +44,26 @@ func Run(ctx context.Context) error {
 		authClient,
 	)
 
-	return httpServer.Run()
+	errCh := make(chan error, 1)
+
+	go func() {
+		if err := httpServer.Run(); err != nil {
+			errCh <- err
+		}
+	}()
+
+	select {
+	case err := <-errCh:
+		return err
+	case <-ctx.Done():
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err := httpServer.Shutdown(shutdownCtx); err != nil {
+			return fmt.Errorf("http server shutdown: %w", err)
+		}
+		authClient.Close()
+
+		return nil
+	}
 }

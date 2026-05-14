@@ -82,6 +82,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 				err.Error(),
 				http.StatusUnauthorized,
 			)
+			return
 		}
 
 		http.Error(

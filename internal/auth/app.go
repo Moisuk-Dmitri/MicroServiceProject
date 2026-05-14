@@ -32,7 +32,7 @@ func Run(ctx context.Context) error {
 
 	repository := authrepository.NewUserRepository(db)
 
-	producer := authkafka.NewProducer(cfg.KafkaAddr, cfg.UserCreatedTopic)
+	producer := authkafka.NewProducer(cfg.KafkaAddr, cfg.KafkaUserCreatedTopic)
 	defer producer.Close()
 
 	service := authservice.NewService(producer, repository)

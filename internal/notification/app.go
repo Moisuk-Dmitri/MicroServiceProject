@@ -3,12 +3,15 @@ package notification
 import (
 	"context"
 	notificationkafka "micro-blog/internal/notification/kafka"
+	"micro-blog/internal/platform/config"
 )
 
 func Run(ctx context.Context) error {
-	brokers := []string{"localhost:9092"}
-	topic := "user.created"
-	groupID := "notification-service"
+	cfg := config.Load()
+
+	brokers := []string{cfg.KafkaAddr}
+	topic := cfg.KafkaUserCreatedTopic
+	groupID := cfg.KafkaGroupID
 	handler := notificationkafka.NewHandler()
 
 	consumer := notificationkafka.NewConsumer(brokers, topic, groupID, handler)
