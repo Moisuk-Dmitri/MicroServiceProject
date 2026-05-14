@@ -2,49 +2,41 @@ package bloghttp
 
 import (
 	"context"
-	"log"
+	authpb "micro-blog/proto/auth"
 	"net/http"
-	"time"
+	"strings"
 )
 
 type Authenticator interface {
-	ValidateToken(ctx context.Context, token string) (bool, error)
+	ValidateToken(ctx context.Context, token string) (*authpb.ValidateTokenResponse, error)
 }
 
 func AuthMiddleware(authenticator Authenticator) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			token := r.Header.Get("Authorization")
-			if token == "" {
+			authHeader := r.Header.Get("Authorization")
+			if authHeader == "" {
 				http.Error(
 					w,
 					"missing authorization header",
 					http.StatusUnauthorized)
 				return
 			}
+			token := strings.Trim(authHeader, "Bearer ")
 
-			ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
-			defer cancel()
-
-			allowed, err := authenticator.ValidateToken(
-				ctx,
-				token,
-			)
+			resp, err := authenticator.ValidateToken(r.Context(), token)
 			if err != nil {
-				log.Printf("failed to check authentication: %v", err)
-				http.Error(w,
-					"internal server error",
-					http.StatusInternalServerError)
+				http.Error(
+					w,
+					"validate token error",
+					http.StatusInternalServerError,
+				)
 				return
 			}
 
-			if !allowed {
-				http.Error(w,
-					"unauthorized",
-					http.StatusUnauthorized)
-				return
-			}
-			next.ServeHTTP(w, r)
+			ctx := context.WithValue(r.Context(), UserIDKey, resp.UserId)
+
+			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }

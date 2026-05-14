@@ -3,7 +3,8 @@ package config
 import "os"
 
 type Config struct {
-	HTTPPort         string
+	AuthHTTPPort     string
+	BlogHTTPPort     string
 	GRPCPort         string
 	PostgresDSN      string
 	KafkaAddr        string
@@ -12,8 +13,9 @@ type Config struct {
 
 func Load() Config {
 	return Config{
-		HTTPPort: getEnv("HTTP_PORT", "8080"),
-		GRPCPort: getEnv("GRPC_PORT", "8081"),
+		AuthHTTPPort: getEnv("AUTH_HTTP_PORT", "8080"),
+		BlogHTTPPort: getEnv("BLOG_HTTP_PORT", "8082"),
+		GRPCPort:     getEnv("GRPC_PORT", "8081"),
 		PostgresDSN: getEnv(
 			"POSTGRES_DSN",
 			"postgres://postgres:postgres@localhost:5432/auth_db?sslmode=disable",

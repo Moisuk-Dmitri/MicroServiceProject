@@ -7,6 +7,8 @@ import (
 	"fmt"
 	authmodel "micro-blog/internal/auth/model"
 	autherrors "micro-blog/internal/auth/model/errors"
+
+	"github.com/lib/pq"
 )
 
 type UserRepository struct {
@@ -34,6 +36,11 @@ func (r *UserRepository) Create(ctx context.Context, user authmodel.User) error 
 		user.CreatedAt,
 	)
 	if err != nil {
+		var pqError *pq.Error
+		if errors.As(err, &pqError) && pqError.Code == "23505" {
+			return autherrors.ErrUserAlreadyExists
+		}
+
 		return fmt.Errorf("create user: %w", err)
 	}
 

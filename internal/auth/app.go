@@ -38,7 +38,7 @@ func Run(ctx context.Context) error {
 	service := authservice.NewService(producer, repository)
 
 	grpcServer := authgrpc.NewServer(cfg.GRPCPort, service)
-	httpServer := authhttp.NewServer(cfg.HTTPPort, service)
+	httpServer := authhttp.NewServer(cfg.AuthHTTPPort, service)
 
 	errCh := make(chan error, 2)
 
@@ -64,6 +64,7 @@ func Run(ctx context.Context) error {
 		if err := httpServer.Shutdown(shutdownCtx); err != nil {
 			return fmt.Errorf("http server shutdown: %w", err)
 		}
+		grpcServer.Shutdown()
 
 		return nil
 	}

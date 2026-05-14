@@ -13,8 +13,9 @@ import (
 type Server struct {
 	authpb.UnimplementedAuthServiceServer
 
-	addr    string
-	service authservice.Service
+	addr       string
+	service    authservice.Service
+	grpcServer *grpc.Server
 }
 
 func NewServer(port string, service authservice.Service) *Server {
@@ -23,8 +24,9 @@ func NewServer(port string, service authservice.Service) *Server {
 	}
 
 	return &Server{
-		addr:    port,
-		service: service,
+		addr:       port,
+		service:    service,
+		grpcServer: grpc.NewServer(),
 	}
 }
 
@@ -34,24 +36,27 @@ func (s *Server) Run() error {
 		return err
 	}
 
-	grpcServer := grpc.NewServer()
-	authpb.RegisterAuthServiceServer(grpcServer, s)
+	authpb.RegisterAuthServiceServer(s.grpcServer, s)
 
 	log.Printf("auth grpc server started on %s", s.addr)
 
-	return grpcServer.Serve(listener)
+	return s.grpcServer.Serve(listener)
+}
+
+func (s *Server) Shutdown() {
+	s.grpcServer.GracefulStop()
 }
 
 func (s *Server) ValidateToken(
 	ctx context.Context,
 	req *authpb.ValidateTokenRequest,
 ) (*authpb.ValidateTokenResponse, error) {
-	valid, err := s.service.ValidateToken(ctx, req.Token)
+	userID, err := s.service.ValidateToken(ctx, req.Token)
 	if err != nil {
 		return nil, err
 	}
-
 	return &authpb.ValidateTokenResponse{
-		Valid: valid,
+		Valid:  userID != "",
+		UserId: userID,
 	}, nil
 }

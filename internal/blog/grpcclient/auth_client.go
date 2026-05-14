@@ -28,15 +28,15 @@ func NewAuthClient(addr string) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) ValidateToken(ctx context.Context, token string) (bool, error) {
+func (c *Client) ValidateToken(ctx context.Context, token string) (*authpb.ValidateTokenResponse, error) {
 	resp, err := c.client.ValidateToken(ctx, &authpb.ValidateTokenRequest{
 		Token: token,
 	})
 	if err != nil {
-		return false, err
+		return &authpb.ValidateTokenResponse{}, err
 	}
 
-	return resp.Valid, nil
+	return resp, nil
 }
 
 func (c *Client) Close() error {

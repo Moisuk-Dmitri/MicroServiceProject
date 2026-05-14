@@ -19,6 +19,7 @@ func NewServer(port string, service authservice.Service) *Server {
 
 	router := chi.NewRouter()
 	router.Post("/register", handler.Register)
+	router.Post("/login", handler.Login)
 
 	if port[0] != ':' {
 		port = ":" + port

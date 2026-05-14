@@ -23,6 +23,7 @@ func NewServer(
 
 	router := chi.NewRouter()
 	router.With(AuthMiddleware(authenticator)).Post("/posts", handler.CreatePost)
+	router.With(AuthMiddleware(authenticator)).Get("/posts", handler.GetPosts)
 
 	return &Server{
 		addr: addr,

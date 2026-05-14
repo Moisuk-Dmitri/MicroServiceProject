@@ -62,3 +62,48 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("user registered"))
 }
+
+func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+	var req authdto.LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(
+			w,
+			"invalid request body",
+			http.StatusBadRequest,
+		)
+		return
+	}
+
+	token, err := h.service.Login(r.Context(), req.Email, req.Password)
+	if err != nil {
+		if errors.Is(err, autherrors.ErrInvalidCredentials) {
+			http.Error(
+				w,
+				err.Error(),
+				http.StatusUnauthorized,
+			)
+		}
+
+		http.Error(
+			w,
+			"internal server error",
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	resp := &authdto.LoginResponse{
+		AccessToken: token,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if err := json.NewEncoder(w).Encode(&resp); err != nil {
+		http.Error(
+			w,
+			"response encoding error",
+			http.StatusInternalServerError,
+		)
+		return
+	}
+}
