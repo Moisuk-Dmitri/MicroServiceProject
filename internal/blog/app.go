@@ -10,6 +10,8 @@ import (
 	blogservice "micro-blog/internal/blog/service"
 	"micro-blog/internal/platform/config"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 func Run(ctx context.Context) error {

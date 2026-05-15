@@ -18,3 +18,9 @@ docker-up:
 
 docker-down:
 	docker compose down
+
+project-up:
+	docker compose up --build
+
+project-down:
+	docker compose down

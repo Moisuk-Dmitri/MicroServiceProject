@@ -19,9 +19,9 @@ func Load() Config {
 		GRPCPort:     getEnv("GRPC_PORT", "8081"),
 		PostgresDSN: getEnv(
 			"POSTGRES_DSN",
-			"postgres://postgres:postgres@localhost:5432/auth_db?sslmode=disable",
+			"postgres://postgres:postgres@postgres:5432/auth_db?sslmode=disable",
 		),
-		KafkaAddr:             getEnv("KAFKA_ADDR", "localhost:9092"),
+		KafkaAddr:             getEnv("KAFKA_ADDR", "kafka:9092"),
 		KafkaUserCreatedTopic: getEnv("KAFKA_USER_CREATED_TOPIC", "user.created"),
 		KafkaGroupID:          getEnv("KAFKA_GROUP_ID", "notification-service"),
 	}
