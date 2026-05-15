@@ -6,6 +6,7 @@ type Config struct {
 	AuthHTTPPort          string
 	BlogHTTPPort          string
 	GRPCPort              string
+	AuthGRPCAddr          string
 	PostgresDSN           string
 	KafkaAddr             string
 	KafkaUserCreatedTopic string
@@ -17,6 +18,7 @@ func Load() Config {
 		AuthHTTPPort: getEnv("AUTH_HTTP_PORT", "8080"),
 		BlogHTTPPort: getEnv("BLOG_HTTP_PORT", "8082"),
 		GRPCPort:     getEnv("GRPC_PORT", "8081"),
+		AuthGRPCAddr: getEnv("AUTH_GRPC_ADDR", "auth:8081"),
 		PostgresDSN: getEnv(
 			"POSTGRES_DSN",
 			"postgres://postgres:postgres@postgres:5432/auth_db?sslmode=disable",

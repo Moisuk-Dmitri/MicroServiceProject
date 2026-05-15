@@ -23,7 +23,7 @@ func Run(ctx context.Context) error {
 		cfg.GRPCPort = ":" + cfg.GRPCPort
 	}
 
-	authClient, err := bloggrpcclient.NewAuthClient(cfg.GRPCPort)
+	authClient, err := bloggrpcclient.NewAuthClient(cfg.AuthGRPCAddr)
 	if err != nil {
 		return err
 	}
