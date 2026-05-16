@@ -64,7 +64,6 @@ func Run(ctx context.Context) error {
 		if err := httpServer.Shutdown(shutdownCtx); err != nil {
 			return fmt.Errorf("http server shutdown: %w", err)
 		}
-		authClient.Close()
 
 		return nil
 	}

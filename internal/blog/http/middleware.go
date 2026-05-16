@@ -29,7 +29,7 @@ func AuthMiddleware(authenticator Authenticator) func(http.Handler) http.Handler
 				http.Error(
 					w,
 					"validate token error",
-					http.StatusInternalServerError,
+					http.StatusUnauthorized,
 				)
 				return
 			}
